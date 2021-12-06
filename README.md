@@ -1,11 +1,11 @@
-#Welcome to aoc_CLI for Advent of Code 2021!
+# Welcome to aoc_CLI for Advent of Code 2021!
 This small project points towards making command line interface
 with python, where you can use **python**, **bash** and **user-made functions**, with the
 scope of helping during the AoC
 
 It features **live output**, **autocomplete** and **command history managing**
 
-##Custom functions
+## Custom functions
 
 So I guess you're now thinking what kind of functions are in there, and as you
 can imagine there's functions for **downloading**, **parsing** and **solving** the daily
@@ -13,7 +13,7 @@ challenges obviously!
 
 Here's a list:
 
-###Functions:
+   ### Functions:
     -group : used to regroup src in various ways
     -parseday : used to parse a input file to a local variable
     -findsum : 2020 day 1 solve
@@ -26,7 +26,7 @@ Here's a list:
     -solve_last_bingo : day 4 part 2 solve
     -map_coordinates : day 5 solve
 
-###Day shortcuts:
+   ### Day shortcuts:
     -2020 day 1 
     -day 1
     -day 2
@@ -36,7 +36,7 @@ Here's a list:
     -day 4 2
     -day 5
 
-###Bash command:
+   ### Bash command:
     -getday <day>: downloads a day's input from adventofcode.com
     -foo : you should't try it
     -rm <path>: removes a file
