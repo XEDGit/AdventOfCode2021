@@ -50,10 +50,12 @@ If instead **you need help with the command usage, try typing the command itself
 CLI will provide you with arguments explaination
 
 ## Command history
-To **navigate your command history** use the keys \` for moving back and ~ for forward
+To **navigate your command history** use the keys '\`' for moving back and '~' for forward,
+at startup history will be populated with enviromental variables
 
 ## Autocomplete
-To **use autocomplete** simply type part of the desired command, and then click 'TAB'
+To **use autocomplete** simply type part of the desired command, and then click 'TAB',
+click repeatedly to navigate
 
 ## Enviromental variables
 As most of the CLIs it uses **enviromental variables**, to set them simply write
