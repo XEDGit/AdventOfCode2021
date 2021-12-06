@@ -25,6 +25,8 @@ Here's a list:
     -solve_bingo : day 4 part 1 solve
     -solve_last_bingo : day 4 part 2 solve
     -map_coordinates : day 5 solve
+    -help : gives list of available functions
+    -clear : clear console history
 
    ### Day shortcuts:
     -2020 day 1 
@@ -44,15 +46,17 @@ Here's a list:
     
     remember the file path on Windows is with \ in UNIX with /
 
-If you don't remember this list **you can always type "help" into the CLI**, if
-instead **you need help with the command usage, try typing the command itself**, the
+If instead **you need help with the command usage, try typing the command itself**, the
 CLI will provide you with arguments explaination
 
-To **navigate your command history** use the keys '`' for moving back and '~' for forward
+## Command history
+To **navigate your command history** use the keys \` for moving back and ~ for forward
 
+## Autocomplete
 To **use autocomplete** simply type part of the desired command, and then click 'TAB'
 
-As most of the CLI it uses **enviromental variables**, to set them simply write
+## Enviromental variables
+As most of the CLIs it uses **enviromental variables**, to set them simply write
 <ENV_VAR> = <new value> into the CLI
-Enviromental variable(Default value):
+### Enviromental variables(Default value):
  -OUT_LEN(150): length of output before being truncated
