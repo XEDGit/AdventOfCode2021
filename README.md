@@ -52,5 +52,7 @@ To **navigate your command history** use the keys '`' for moving back and '~' fo
 
 To **use autocomplete** simply type part of the desired command, and then click 'TAB'
 
+As most of the CLI it uses **enviromental variables**, to set them simply write
+<ENV_VAR> = <new value> into the CLI
 Enviromental variable(Default value):
-    -OUT_LEN(150): length of output before being truncated
+ -OUT_LEN(150): length of output before being truncated
