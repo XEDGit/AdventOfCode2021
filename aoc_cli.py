@@ -44,7 +44,8 @@ def out(msg, col):
 
 def terminate(signum=0, err=0):
     print(out(f"{bcol.BOLD}Goodbye!♥", bcol.OKGREEN))
-    os.remove("stdout_temp.txt")
+    if os.path.exists("stdout_temp.txt"):
+        os.remove("stdout_temp.txt")
     exit()
     
 def gate(input, gatename):
@@ -173,9 +174,12 @@ def execute_input(user_input, variables, custom_bash, custom_funcs, sim):
             return res , stdout
     #custom func iteration
     for key in custom_funcs:
-        if key in user_input:
-            res = custom_funcs[key](user_input.replace(key, ""), variables)
-            return res, stdout
+        if custom_funcs[key]:
+            if key in user_input:
+                res = custom_funcs[key](user_input.replace(key, ""), variables)
+                return res, stdout
+        else:
+            return "", ""
     #normal python exec or eval
     evaluated_func = evaluate_input(user_input)
     f = open("stdout_temp.txt", 'w+')
@@ -222,6 +226,8 @@ def main():
         "cat" :     cat_keyword
               }
     custom_funcs = {
+        "clear" :               0,
+        "help" :                0,
         "group" :			    group,
         "parseday" :		    parseday,
         "findsum" :			    findsum,
@@ -312,6 +318,8 @@ def main():
                 cmd_index = 0
                 cmd_history.pop(0)
             if user_input:
+                if "clear" in user_input:
+                    history.clear()
                 cmd_history.insert(0, user_input)
             res = concat_functions(user_input, variables, custom_bash, custom_funcs,)
             user_input = ""

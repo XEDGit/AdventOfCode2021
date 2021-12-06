@@ -1,14 +1,17 @@
 import typer
 import requests
+import os
 
-cookief = open("cookie.txt", 'r+')
-token = cookief.read()
-if not token:
-    print("Session cookie not found, to set it simply write it into the just created cookie.txt")
-    exit()
 app = typer.Typer()
 @app.command()
 def getday(day:int):
+    cookief = open("cookie.txt", 'r+')
+    token = cookief.read()
+    if not token:
+        print("Session cookie not found, to set it simply write it into the just created cookie.txt")
+        exit()
+    if not os.path.exists('inputs'):
+        os.makedirs('inputs')
     with requests.Session() as s:
         s.cookies.set("session", token, domain=".adventofcode.com")
         data = s.get(f"https://adventofcode.com/2021/day/{day}/input")
