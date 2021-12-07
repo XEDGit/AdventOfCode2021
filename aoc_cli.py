@@ -1,4 +1,3 @@
-import enum
 import itertools
 import os
 import signal
@@ -11,17 +10,6 @@ try:
     import getch
 except:
     import msvcrt as getch
-
-class bcol:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARN = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 #generator functions
 def gettype(user_input):
@@ -39,26 +27,11 @@ def evaluate_input(user_input):
         return eval
 
 #utility functions
-def out(msg, col):
-    return f"{col}{msg}{bcol.ENDC}"
-
 def terminate(signum=0, err=0):
     print(out(f"{bcol.BOLD}Goodbye!♥", bcol.OKGREEN))
     if os.path.exists("stdout_temp.txt"):
         os.remove("stdout_temp.txt")
-    exit()
-    
-def gate(input, gatename):
-    if "not" in gatename:
-        output = ""
-        for ch in input:
-            if "1" in ch:
-                output += '0'
-            elif "0" in ch:
-                output += '1'
-        return output
-    else:
-        print("Gate not supported")        
+    exit()      
 
 def get_input():
     if "Windows" in platform.platform():
@@ -118,14 +91,26 @@ def parseday(user_input, variables):
     if "str" in args[1] or "int" in args[1]:
         values = []
         typ = gettype(args[1])
-        for line in fd.readlines():
-            try:
-                if typ == str:
-                    values.append(typ(line).rstrip("\n"))
-                else:
-                    values.append(typ(line))
-            except:
-                return out("Error: data type not compatible", bcol.FAIL)
+        if len(args) < 3:
+            for line in fd.readlines():
+                try:
+                    if typ == str:
+                        values.append(typ(line).rstrip("\n"))
+                    else:
+                        values.append(typ(line))
+                except:
+                    return out("Error: data type not compatible, try adding a <delimiter> parameter", bcol.FAIL)
+        else:
+            delimiter = args[2]
+            for line in fd.readlines():
+                try:
+                    for item in line.split(delimiter):
+                        if typ == str:
+                            values.append(typ(item).rstrip("\n"))
+                        else:
+                            values.append(typ(item))
+                except:
+                    return out("Error: data type not compatible", bcol.FAIL)
     elif "dlist" in args[1]:
         values = []
         new_dict = {}
@@ -174,12 +159,12 @@ def execute_input(user_input, variables, custom_bash, custom_funcs, sim):
             return res , stdout
     #custom func iteration
     for key in custom_funcs:
-        if custom_funcs[key]:
-            if key in user_input:
+        if key in user_input:
+            if custom_funcs[key] != 0:
                 res = custom_funcs[key](user_input.replace(key, ""), variables)
                 return res, stdout
-        else:
-            return "", ""
+            else:
+                return "", ""
     #normal python exec or eval
     evaluated_func = evaluate_input(user_input)
     f = open("stdout_temp.txt", 'w+')
@@ -224,7 +209,7 @@ def main():
         "foo" :		f"{sys.executable} ./customs.py foo",
         "rm" :		rm_keyword,
         "cat" :     cat_keyword
-              }
+    }
     custom_funcs = {
         "clear" :               0,
         "help" :                0,
@@ -239,6 +224,7 @@ def main():
         "solve_bingo" :         solve_bingo,
         "solve_last_bingo" :    solve_last_bingo,
         "map_coordinates" :     map_coordinates,
+        "evolve_fishes" :       evolve_fishes,
         "2020 day 1" :			findsum,
         "day 1" :       	    find_increase,
         "day 2" :		        find_arrive,
@@ -246,18 +232,20 @@ def main():
         "day 3 2" :             filter_commons,
         "day 4 1" :             solve_bingo,
         "day 4 2" :             solve_last_bingo,
-        "day 5" :               map_coordinates
+        "day 5" :               map_coordinates,
+        "day 6" :               evolve_fishes,
+		"day 7" :				align_crabs,
     }
     variables = {
         "OUT_LEN" : 150,
-        }
+    }
     history = [
             f"{bcol.BOLD}{bcol.OKGREEN}Welcome to aoc_CLI from XEDGit",
             f"{bcol.OKBLUE}Enviromental variables(current value):",
             f"\t{bcol.OKBLUE}OUT_LEN(150) = length of output before being truncated",
             f"{bcol.WARN}Use '{bytes.decode(up_key)}' or '{bytes.decode(down_key)}' to access command history!",
             bcol.ENDC
-            ]
+    ]
     cmd_history = [
         "OUT_LEN = "
     ]
@@ -302,7 +290,7 @@ def main():
             res = concat_functions(user_input, copy.deepcopy(variables), custom_bash, custom_funcs, True)
             if res:
                 print(f"{bcol.BOLD}{bcol.WARN}Out~> {bcol.ENDC}{res}")
-        #get user input
+        #get user input and clear
         byte = get_input()
         try:
             ch = bytes.decode(byte)

@@ -1,13 +1,50 @@
-from aoc_cli import out, bcol, gate
 import itertools
 import copy
+
+#day 7 (god that's sloooooow)
+def align_crabs(user_input, variables):
+	user_input = user_input.strip(" ")
+	if not user_input:
+		return out("Usage; align_crabs <fuel increment>:bool", bcol.WARN)
+	if "true" != user_input and "false" != user_input:
+		return out("Error: <fuel increment> must be true or false", bcol.FAIL)
+	crabslist = variables["src"]
+	maxim = max(crabslist)
+	sums = [0] * maxim
+	if "false" == user_input:
+		for x in range(maxim):
+			for crab in crabslist:
+				sums[x] += abs(crab - x)
+	else:
+		for x in range(maxim):
+			for crab in crabslist:
+				base_fuel = abs(crab - x) + 1
+				for i in range(base_fuel):
+					sums[x] += i
+	return out("Minimum fuel required for crabs to align is " + str(min(sums)), bcol.OKGREEN)
+
+#day 6
+def evolve_fishes(user_input, variables):
+	if not user_input.strip(" "):
+		return out("Usage; evolve_fishes <days>:int", bcol.WARN)
+	try:
+		args = int(user_input.strip(" "))
+	except:
+		return out("Error: <days> must be an integer", bcol.FAIL)
+	fishnet = variables["src"].copy()
+	d = {x : 0 for x in range(9)}
+	for fish in fishnet:
+		d[fish] += 1
+	for day in range(args):
+		d = {0: d[1], 1: d[2], 2: d[3], 3: d[4], 4: d[5], 5: d[6], 6: d[7] + d[0], 7: d[8], 8: d[0]}
+	return out(str(sum(d[x] for x in range(9))), bcol.OKGREEN)
 
 #day 5
 def map_coordinates(user_input, variables):
     args = "src"
     diag = user_input.strip(" ")
     try:
-        map = [[0 for x in range(1000)] for y in range(1000)]
+        maps = [[0 for x in range(1000)] for y in range(1000)]
         for line in variables[args]:
             bothcoords = line.split("-")
             start = bothcoords[0].split(",")
@@ -19,49 +56,49 @@ def map_coordinates(user_input, variables):
             if start[0] == end[0]:
                 if start[1] <= end[1]:
                     while start[1] <= end[1]:
-                        map[start[1]][start[0]] += 1
+                        maps[start[1]][start[0]] += 1
                         start[1] += 1
                 else:
                     while start[1] >= end[1]:
-                        map[start[1]][start[0]] += 1
+                        maps[start[1]][start[0]] += 1
                         start[1] -= 1
             elif start[1] == end[1]:
                 if start[0] <= end[0]:
                     while start[0] <= end[0]:
-                        map[start[1]][start[0]] += 1
+                        maps[start[1]][start[0]] += 1
                         start[0] += 1
                 else:
                     while start[0] >= end[0]:
-                        map[start[1]][start[0]] += 1
+                        maps[start[1]][start[0]] += 1
                         start[0] -= 1
             elif diag:
                 if "true" != diag:
                     return out("Usage: map_coordinates <use diagonals=false or tue>", bcol.WARN)
                 if start[0] <= end[0] and start[1] <= end[1]:
                     while start[1] <= end[1] or start[0] <= end[0]:
-                        map[start[1]][start[0]] += 1
+                        maps[start[1]][start[0]] += 1
                         start[1] += 1
                         start[0] += 1
                 elif start[0] >= end[0] and start[1] >= end[1]:
                     while start[0] >= end[0] or start[1] >= end[1]:
-                        map[start[1]][start[0]] += 1
+                        maps[start[1]][start[0]] += 1
                         start[1] -= 1
                         start[0] -= 1
                 elif start[0] <= end[0] and start[1] >= end[1]:
                     while start[0] <= end[0] or start[1] >= end[1]:
-                        map[start[1]][start[0]] += 1
+                        maps[start[1]][start[0]] += 1
                         start[1] -= 1
                         start[0] += 1
                 elif start[0] >= end[0] and start[1] <= end[1]:
                     while start[0] >= end[0] or start[1] <= end[1]:
-                        map[start[1]][start[0]] += 1
+                        maps[start[1]][start[0]] += 1
                         start[1] += 1
                         start[0] -= 1
                 else:
                     print(f"{start} -> {end}")
         res = 0
         with open("map.txt", 'w') as f:
-            for col in map:
+            for col in maps:
                 for cell in col:
                     if cell == 0:
                         f.write("-")
@@ -103,22 +140,6 @@ def parse_bingo(user_input, variables):
     except Exception as e:
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
 
-def check_bingo(tables):
-    for tab_i, table in enumerate(tables):
-        if table:
-            temp_col = [0] * 5
-            for lin_i, line in enumerate(table):
-                temp = 0
-                for val_i, value in enumerate(line):
-                    temp += value
-                    temp_col[val_i] += value
-                if temp == 0:
-                    return table
-            for val in temp_col:
-                if val == 0:
-                    return table
-    return False
-
 def check_bingo(table):
     if table:
         temp_col = [0] * 5
@@ -150,12 +171,12 @@ def solve_last_bingo(user_input, variables):
                             tables[tab_i][lin_i][val_i] = -1
                 winning = check_bingo(table)
                 if len(tables) == 1 and winning:
-                    sum = 0
+                    summ = 0
                     for resline in tables[0]:
                         for value in resline:
                             if value != -1:
-                                sum += value
-                    return out(f"sum: {sum} last value: {num} table index: {tab_i} multiplied: {sum * num}", bcol.OKGREEN)
+                                summ += value
+                    return out(f"sum: {summ} last value: {num} multiplied: {summ * num}", bcol.OKGREEN)
                 if len(tables) != 1 and winning:
                     toremove.append(winning)
             for l in toremove:
@@ -353,3 +374,30 @@ def findsum(user_input, variables):
             return out(f"Error: can't find {args[1]}:<src list> in globals", bcol.FAIL)
     except Exception as e:
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
+
+#utilities
+class bcol:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARN = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def out(msg, col):
+    return f"{col}{msg}{bcol.ENDC}"
+
+def gate(input, gatename):
+    if "not" in gatename:
+        output = ""
+        for ch in input:
+            if "1" in ch:
+                output += '0'
+            elif "0" in ch:
+                output += '1'
+        return output
+    else:
+        print("Gate not supported")  

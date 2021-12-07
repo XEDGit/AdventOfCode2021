@@ -5,6 +5,8 @@ import os
 app = typer.Typer()
 @app.command()
 def getday(day:int):
+    if not os.path.exists('cookie.txt'):
+        open("cookie.txt", 'w').close()
     cookief = open("cookie.txt", 'r+')
     token = cookief.read()
     if not token:
