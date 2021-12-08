@@ -235,6 +235,7 @@ def main():
         "day 5" :               map_coordinates,
         "day 6" :               evolve_fishes,
 		"day 7" :				align_crabs,
+        "day 8" :               decode_clock,
     }
     variables = {
         "OUT_LEN" : 150,

@@ -1,6 +1,21 @@
 import itertools
 import copy
 
+#day 8
+def decode_clock(user_input, variables):
+    full_input = variables["src"]
+    only_out = []
+    res = 0
+    for line in full_input:
+        only_out.append(line.split("|")[1])
+    if False:
+        for line in only_out:
+            for digit in line.split(" "):
+                if len(digit) == 2 or len(digit) == 3 or len(digit) == 4 or len(digit) == 7:
+                    res += 1
+    
+    return out(f"There's {res} unique patterns", bcol.OKGREEN)                
+
 #day 7 (god that's sloooooow)
 def align_crabs(user_input, variables):
 	user_input = user_input.strip(" ")
