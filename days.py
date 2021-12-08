@@ -3,61 +3,110 @@ import copy
 
 #day 8
 def decode_clock(user_input, variables):
+    user_input = user_input.strip(" ")
+    if not user_input:
+        return out("Usage; decode_clock <decrypt>:bool", bcol.WARN)
+    if "true" != user_input and "false" != user_input:
+        return out("Error: <decrypt> must be true or false", bcol.FAIL)
     full_input = variables["src"]
     only_out = []
     res = 0
     for line in full_input:
-        only_out.append(line.split("|")[1])
-    if False:
-        for line in only_out:
+        only_out.append(line.split("|"))
+    if user_input == "false":
+        for line in only_out[1]:
             for digit in line.split(" "):
                 if len(digit) == 2 or len(digit) == 3 or len(digit) == 4 or len(digit) == 7:
                     res += 1
-    d = []
-    for line in only_out:
-        for digit in line.split(" "):
-            d[len(digit)] = digit
-    d[6] = 
-    
-    return out(f"There's {res} unique patterns", bcol.OKGREEN)                
+        return out(f"There's {res} unique patterns", bcol.OKGREEN)
+    else:
+        lengths = {2 : [1], 3 : [7], 4 : [4], 5 : [2, 3, 5], 6 : [0, 6, 9], 7 : [8]}
+        total = 0
+        for line in only_out:
+            known = {}
+            storage = {2 : [], 3 : [], 4 : [], 5 : [], 6 : [], 7 : []}
+            for digit in line[0].strip(" ").split(" "):
+                storage[len(digit)].append(digit)
+                if len(digit) == 2 or len(digit) == 3 or len(digit) == 4 or len(digit) == 7:
+                    known[lengths[len(digit)][0]] = digit
+            for digit in line[0].strip(" ").split(" "):
+                #find 3
+                for string in storage[5]:
+                    if known[1][0] in string and known[1][1] in string:
+                        known[3] = string
+                        break
+                #find 6
+                for string in storage[6]:
+                    if known[1][0] not in string or known[1][1] not in string:
+                        known[6] = string
+                        break
+                #find 5 and 2
+                top_right = "abcdefg"
+                for ch in known[6]:
+                    top_right = top_right.replace(ch, "")
+                for string in storage[5]:
+                    if known[1][0] not in string or known[1][1] not in string:
+                        if top_right in string:
+                            known[2] = string
+                        elif top_right not in string:
+                            known[5] = string
+                #find 9
+                for string in storage[6]:
+                    if all(ch in string for ch in known[5]) and top_right in string:
+                        known[9] = string
+                        break
+                #find 0
+                for string in storage[6]:
+                    if known[9] != string and known[6] != string:
+                        known[0] = string
+                        break
+            res = 0
+            for digit in line[1].strip(" ").split(" "):
+                for key in known:
+                    if len(known[key]) == len(digit) and all(ch in known[key] for ch in digit):
+                        res *= 10
+                        res += key
+                        break
+            total += res
+        return out(f"Sum of outputs is {total}", bcol.OKGREEN)
 
 #day 7 (god that's sloooooow)
 def align_crabs(user_input, variables):
-	user_input = user_input.strip(" ")
-	if not user_input:
-		return out("Usage; align_crabs <fuel increment>:bool", bcol.WARN)
-	if "true" != user_input and "false" != user_input:
-		return out("Error: <fuel increment> must be true or false", bcol.FAIL)
-	crabslist = variables["src"]
-	maxim = max(crabslist)
-	sums = [0] * maxim
-	if "false" == user_input:
-		for x in range(maxim):
-			for crab in crabslist:
-				sums[x] += abs(crab - x)
-	else:
-		for x in range(maxim):
-			for crab in crabslist:
-				base_fuel = abs(crab - x) + 1
-				for i in range(base_fuel):
-					sums[x] += i
-	return out("Minimum fuel required for crabs to align is " + str(min(sums)), bcol.OKGREEN)
+    user_input = user_input.strip(" ")
+    if not user_input:
+        return out("Usage; align_crabs <fuel increment>:bool", bcol.WARN)
+    if "true" != user_input and "false" != user_input:
+        return out("Error: <fuel increment> must be true or false", bcol.FAIL)
+    crabslist = variables["src"]
+    maxim = max(crabslist)
+    sums = [0] * maxim
+    if "false" == user_input:
+        for x in range(maxim):
+            for crab in crabslist:
+                sums[x] += abs(crab - x)
+    else:
+        for x in range(maxim):
+            for crab in crabslist:
+                base_fuel = abs(crab - x) + 1
+                for i in range(base_fuel):
+                    sums[x] += i
+    return out(f"Minimum fuel required for crabs to align is {str(min(sums))}", bcol.OKGREEN)
 
 #day 6
 def evolve_fishes(user_input, variables):
-	if not user_input.strip(" "):
-		return out("Usage; evolve_fishes <days>:int", bcol.WARN)
-	try:
-		args = int(user_input.strip(" "))
-	except:
-		return out("Error: <days> must be an integer", bcol.FAIL)
-	fishnet = variables["src"].copy()
-	d = {x : 0 for x in range(9)}
-	for fish in fishnet:
-		d[fish] += 1
-	for day in range(args):
-		d = {0: d[1], 1: d[2], 2: d[3], 3: d[4], 4: d[5], 5: d[6], 6: d[7] + d[0], 7: d[8], 8: d[0]}
-	return out(str(sum(d[x] for x in range(9))), bcol.OKGREEN)
+    if not user_input.strip(" "):
+        return out("Usage; evolve_fishes <days>:int", bcol.WARN)
+    try:
+        args = int(user_input.strip(" "))
+    except:
+        return out("Error: <days> must be an integer", bcol.FAIL)
+    fishnet = variables["src"].copy()
+    d = {x : 0 for x in range(9)}
+    for fish in fishnet:
+        d[fish] += 1
+    for day in range(args):
+        d = {0: d[1], 1: d[2], 2: d[3], 3: d[4], 4: d[5], 5: d[6], 6: d[7] + d[0], 7: d[8], 8: d[0]}
+    return out(str(sum(d[x] for x in range(9))), bcol.OKGREEN)
 
 #day 5
 def map_coordinates(user_input, variables):
