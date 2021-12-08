@@ -13,6 +13,11 @@ def decode_clock(user_input, variables):
             for digit in line.split(" "):
                 if len(digit) == 2 or len(digit) == 3 or len(digit) == 4 or len(digit) == 7:
                     res += 1
+    d = []
+    for line in only_out:
+        for digit in line.split(" "):
+            d[len(digit)] = digit
+    d[6] = 
     
     return out(f"There's {res} unique patterns", bcol.OKGREEN)                
 
