@@ -225,6 +225,7 @@ def main():
         "solve_last_bingo" :    solve_last_bingo,
         "map_coordinates" :     map_coordinates,
         "evolve_fishes" :       evolve_fishes,
+        "map_smoke_flows" :     map_smoke_flows,
         "2020 day 1" :			findsum,
         "day 1" :       	    find_increase,
         "day 2" :		        find_arrive,
@@ -236,6 +237,7 @@ def main():
         "day 6" :               evolve_fishes,
 		"day 7" :				align_crabs,
         "day 8" :               decode_clock,
+        "day 9" :               map_smoke_flows,
     }
     variables = {
         "OUT_LEN" : 150,

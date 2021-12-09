@@ -1,11 +1,87 @@
 import itertools
 import copy
 
+#day 9
+def check_neighbours(value, ground_map, x, y):
+    neighbours = [
+        -1,
+        0,
+        1
+    ]
+    for yval in neighbours:
+        newy = y + yval
+        if newy != y:
+            if newy >= 0 and newy < len(ground_map):
+                new = ground_map[newy][x]
+                if new <= value:
+                    return 0
+        
+    for xval in neighbours:
+        newx = x + xval
+        if newx != x:
+            if newx >= 0 and newx < len(ground_map[0]):
+                new = ground_map[y][newx]
+                if new <= value:
+                    return 0
+    return 1
+
+def map_smoke_flows(user_input, variables):
+    user_input = user_input.strip(" ")
+    if not user_input:
+        return out("Usage: map_smoke_flows <mode>: 'low' or 'basin'", bcol.WARN)
+    if "true" != user_input and "false" != user_input:
+        return out("Error: <mode> must be 'low' or 'basin'", bcol.FAIL)
+    full_input = variables["src"]
+    ground_map = []
+    lower_points = []
+    for line in full_input:
+        new_list = []
+        for ch in line:
+            new_list.append(int(ch))
+        ground_map.append(new_list)
+    tot_risk = 0
+    for y, line in enumerate(ground_map):
+        for x, value in enumerate(line):
+            if check_neighbours(value, ground_map, x, y):
+                tot_risk += 1 + value
+                lower_points.append([value, x, y])
+    if user_input == "false":
+        return out(f"Total of risk levels is {tot_risk}", bcol.OKGREEN)
+    basins = []
+    for low in lower_points:
+       basins.append(flood_fill(low[1], low[2], ground_map))
+    res = 1
+    for basin in sorted(basins, reverse=True)[:3]:
+        res *= basin
+    with open("map.txt", 'w') as f:
+        for line in ground_map:
+            for num in line:
+                if num == -1:
+                    f.write("-")
+                else:
+                    f.write(str(num))
+    return out(f"Total number of basins is {len(basins)} sizes multiplied are {res}", bcol.OKGREEN)
+        
+def flood_fill(x, y, ground_map, c = 0):
+    if ground_map[y][x] == -1 or ground_map[y][x] == 9:
+        return 0
+    ground_map[y][x] = -1
+    c += 1
+    if x - 1 >= 0:
+        c += flood_fill(x - 1, y, ground_map)
+    if x + 1 < len(ground_map[0]):
+        c += flood_fill(x + 1, y, ground_map)
+    if y - 1 >= 0:
+        c += flood_fill(x, y - 1, ground_map)
+    if y + 1 < len(ground_map):
+        c += flood_fill(x, y + 1, ground_map)
+    return c
+
 #day 8
 def decode_clock(user_input, variables):
     user_input = user_input.strip(" ")
     if not user_input:
-        return out("Usage; decode_clock <decrypt>:bool", bcol.WARN)
+        return out("Usage: decode_clock <decrypt>:bool", bcol.WARN)
     if "true" != user_input and "false" != user_input:
         return out("Error: <decrypt> must be true or false", bcol.FAIL)
     full_input = variables["src"]
