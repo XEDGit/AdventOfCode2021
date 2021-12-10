@@ -6,17 +6,20 @@ import platform
 import subprocess
 import copy
 from days import *
+
 try:
     import getch
 except:
     import msvcrt as getch
 
-#generator functions
+
+# generator functions
 def gettype(user_input):
     if 'int' in user_input:
         return int
     if 'str' in user_input:
         return str
+
 
 def evaluate_input(user_input):
     try:
@@ -26,12 +29,14 @@ def evaluate_input(user_input):
     else:
         return eval
 
-#utility functions
+
+# utility functions
 def terminate(signum=0, err=0):
     print(out(f"{bcol.BOLD}Goodbye!♥", bcol.OKGREEN))
     if os.path.exists("stdout_temp.txt"):
         os.remove("stdout_temp.txt")
-    exit()      
+    exit()
+
 
 def get_input():
     if "Windows" in platform.platform():
@@ -41,7 +46,8 @@ def get_input():
     if b'\x03' in res or b'\x04' in res:
         terminate()
     return res
-    
+
+
 def streach(args):
     res = " "
     for arg in args.split():
@@ -50,11 +56,12 @@ def streach(args):
     res = res[:-1]
     return res
 
-#custom user functions
+
+# custom user functions
 def group(user_input, variables):
     args = user_input.split()
     if len(args) <= 2:
-            return out("Usage: group <groups dimesion>:int <new variable name>:str <source variable>:str", bcol.WARN)
+        return out("Usage: group <groups dimesion>:int <new variable name>:str <source variable>:str", bcol.WARN)
     if "all" in args[0]:
         if len(args) >= 4:
             if variables.get(args[3]):
@@ -64,16 +71,18 @@ def group(user_input, variables):
             else:
                 return out(f"Error: can't find {args[1]}:<src list> in globals", bcol.FAIL)
         else:
-            return out("Usage: group all <groups dimesion>:int <new variable name>:str <source variable>:str", bcol.WARN)
+            return out("Usage: group all <groups dimesion>:int <new variable name>:str <source variable>:str",
+                       bcol.WARN)
     else:
         if not variables.get(args[2]):
             return out(f"Error: '{args[2]}' not found in global variables", bcol.FAIL)
         new_list = []
         value = int(args[0])
         for x in range(0, len(variables[args[2]]), value):
-            new_list.append(variables[args[2]][x:x+value])
+            new_list.append(variables[args[2]][x:x + value])
         variables[args[1]] = new_list
     return new_list
+
 
 def parseday(user_input, variables):
     args = user_input.split()
@@ -137,7 +146,9 @@ def parseday(user_input, variables):
     variables["src"] = values
     fd.close()
     return f"src = {values}"
-#main loop functions
+
+
+# main loop functions
 def execute_custom_bash(user_input, command):
     with open("stdout_temp.txt", 'w+') as f:
         subprocess.run(f"{command}{streach(user_input)}", shell=True, stdout=f, stderr=f)
@@ -147,17 +158,19 @@ def execute_custom_bash(user_input, command):
         f.close()
     if not res:
         res = "Success!"
-    return res 
-    
+    return res
+
+
 def execute_input(user_input, variables, custom_bash, custom_funcs, sim):
     res = ""
     stdout = ""
-    #custom bash iteration
+    # custom bash iteration
     for key in custom_bash:
         if key in user_input:
-            res = execute_custom_bash(user_input.replace(key, ""), custom_bash[key]) if sim == False else "User-defined bash method"
-            return res , stdout
-    #custom func iteration
+            res = execute_custom_bash(user_input.replace(key, ""),
+                                      custom_bash[key]) if sim == False else "User-defined bash method"
+            return res, stdout
+    # custom func iteration
     for key in custom_funcs:
         if key in user_input:
             if custom_funcs[key] != 0:
@@ -165,7 +178,7 @@ def execute_input(user_input, variables, custom_bash, custom_funcs, sim):
                 return res, stdout
             else:
                 return "", ""
-    #normal python exec or eval
+    # normal python exec or eval
     evaluated_func = evaluate_input(user_input)
     f = open("stdout_temp.txt", 'w+')
     temperr = sys.stderr
@@ -183,6 +196,7 @@ def execute_input(user_input, variables, custom_bash, custom_funcs, sim):
     stdout = f.read()[:-1]
     f.close()
     return str(res), stdout
+
 
 def concat_functions(user_input, variables, custom_bash, custom_funcs, sim=False):
     args = user_input.split('|')
@@ -205,49 +219,51 @@ def concat_functions(user_input, variables, custom_bash, custom_funcs, sim=False
 
 def main():
     custom_bash = {
-        "getday" :	f"{sys.executable} ./customs.py getday",
-        "foo" :		f"{sys.executable} ./customs.py foo",
-        "rm" :		rm_keyword,
-        "cat" :     cat_keyword
+        "getday": f"{sys.executable} ./customs.py getday",
+        "foo": f"{sys.executable} ./customs.py foo",
+        "rm": rm_keyword,
+        "cat": cat_keyword
     }
     custom_funcs = {
-        "clear" :               0,
-        "help" :                0,
-        "group" :			    group,
-        "parseday" :		    parseday,
-        "findsum" :			    findsum,
-        "find_increase" :	    find_increase,
-        "find_arrive" :		    find_arrive,
-        "count_commons" :       count_commons,
-        "filter_commons" :      filter_commons,
-        "parse_bingo" :         parse_bingo,
-        "solve_bingo" :         solve_bingo,
-        "solve_last_bingo" :    solve_last_bingo,
-        "map_coordinates" :     map_coordinates,
-        "evolve_fishes" :       evolve_fishes,
-        "map_smoke_flows" :     map_smoke_flows,
-        "2020 day 1" :			findsum,
-        "day 1" :       	    find_increase,
-        "day 2" :		        find_arrive,
-        "day 3 1" :             count_commons,
-        "day 3 2" :             filter_commons,
-        "day 4 1" :             solve_bingo,
-        "day 4 2" :             solve_last_bingo,
-        "day 5" :               map_coordinates,
-        "day 6" :               evolve_fishes,
-		"day 7" :				align_crabs,
-        "day 8" :               decode_clock,
-        "day 9" :               map_smoke_flows,
+        "clear": 0,
+        "help": 0,
+        "group": group,
+        "parseday": parseday,
+        "findsum": findsum,
+        "find_increase": find_increase,
+        "find_arrive": find_arrive,
+        "count_commons": count_commons,
+        "filter_commons": filter_commons,
+        "parse_bingo": parse_bingo,
+        "solve_bingo": solve_bingo,
+        "solve_last_bingo": solve_last_bingo,
+        "map_coordinates": map_coordinates,
+        "evolve_fishes": evolve_fishes,
+        "map_smoke_flows": map_smoke_flows,
+        "validate_navigation": validate_navigation,
+        "2020 day 1": findsum,
+        "day 10": validate_navigation,
+        "day 1": find_increase,
+        "day 2": find_arrive,
+        "day 3 1": count_commons,
+        "day 3 2": filter_commons,
+        "day 4 1": solve_bingo,
+        "day 4 2": solve_last_bingo,
+        "day 5": map_coordinates,
+        "day 6": evolve_fishes,
+        "day 7": align_crabs,
+        "day 8": decode_clock,
+        "day 9": map_smoke_flows,
     }
     variables = {
-        "OUT_LEN" : 150,
+        "OUT_LEN": 150,
     }
     history = [
-            f"{bcol.BOLD}{bcol.OKGREEN}Welcome to aoc_CLI from XEDGit",
-            f"{bcol.OKBLUE}Enviromental variables(current value):",
-            f"\t{bcol.OKBLUE}OUT_LEN(150) = length of output before being truncated",
-            f"{bcol.WARN}Use '{bytes.decode(up_key)}' or '{bytes.decode(down_key)}' to access command history!",
-            bcol.ENDC
+        f"{bcol.BOLD}{bcol.OKGREEN}Welcome to aoc_CLI from XEDGit",
+        f"{bcol.OKBLUE}Enviromental variables(current value):",
+        f"\t{bcol.OKBLUE}OUT_LEN(150) = length of output before being truncated",
+        f"{bcol.WARN}Use '{bytes.decode(up_key)}' or '{bytes.decode(down_key)}' to access command history!",
+        bcol.ENDC
     ]
     cmd_history = [
         "OUT_LEN = "
@@ -260,18 +276,18 @@ def main():
     compatibles = []
     subprocess.run(clear_keyword, shell=True)
     while 1:
-        #print interface
+        # print interface
         his_max_len = os.get_terminal_size(1)[1] - 2
         his_len = len(history)
         for i, el in enumerate(history):
             if i > his_len - his_max_len:
                 print(el)
         print(f"{bcol.BOLD}{bcol.OKCYAN}☃ aoc@$hell~>{bcol.ENDC} {user_input}")
-        #print autocomplete commands on tab
+        # print autocomplete commands on tab
         if tab in byte and compatibles:
             for cmd in compatibles:
                 print(cmd)
-        #print all available funcs on help
+        # print all available funcs on help
         elif "help" in user_input:
             print(f"{bcol.WARN}Available bash commands:{bcol.ENDC}")
             for i, item in enumerate(custom_bash):
@@ -288,20 +304,20 @@ def main():
                 if i % 6 == 5:
                     print('')
             print('')
-        #print simulated output
+        # print simulated output
         if user_input:
             res = concat_functions(user_input, copy.deepcopy(variables), custom_bash, custom_funcs, True)
             if res:
                 print(f"{bcol.BOLD}{bcol.WARN}Out~> {bcol.ENDC}{res}")
-        #get user input and clear
+        # get user input and clear
         byte = get_input()
         try:
             ch = bytes.decode(byte)
         except:
             ch = ''
         subprocess.run(clear_keyword, shell=True)
-        #check for special keys
-        #enter
+        # check for special keys
+        # enter
         if enter in byte:
             autocomplete_index = 0
             history.append(f"{bcol.BOLD}{bcol.OKCYAN}☃ aoc@$hell~>{bcol.ENDC} {user_input}")
@@ -312,14 +328,14 @@ def main():
                 if "clear" in user_input:
                     history.clear()
                 cmd_history.insert(0, user_input)
-            res = concat_functions(user_input, variables, custom_bash, custom_funcs,)
+            res = concat_functions(user_input, variables, custom_bash, custom_funcs, )
             user_input = ""
             if res:
                 history.append(res)
-        #backspace
+        # backspace
         elif backspace in byte:
             user_input = user_input[:-1]
-        #autocomplete
+        # autocomplete
         elif tab in byte:
             if user_input:
                 compatibles = []
@@ -332,7 +348,7 @@ def main():
                     autocomplete_index += 1
                     if autocomplete_index == len(compatibles):
                         autocomplete_index = 0
-        #command history handling
+        # command history handling
         elif up_key in byte and cmd_index + 1 < len(cmd_history):
             if cmd_index == 0:
                 cmd_history.insert(0, user_input)
@@ -343,14 +359,15 @@ def main():
             user_input = cmd_history[cmd_index]
             if cmd_index == 0:
                 cmd_history.pop(0)
-        #normal case handling
+        # normal case handling
         elif ch:
             user_input += ch
 
-#Start of program
+
+# Start of program
 signal.signal(signal.SIGINT, terminate)
 
-#Defining system dependant globals
+# Defining system dependant globals
 up_key = b'`'
 down_key = b'~'
 if "Windows" in platform.platform():

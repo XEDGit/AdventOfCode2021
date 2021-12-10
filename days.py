@@ -1,35 +1,70 @@
 import itertools
 import copy
 
-#day 9
-def check_neighbours(value, ground_map, x, y):
-    neighbours = [
-        -1,
-        0,
-        1
-    ]
-    for yval in neighbours:
-        newy = y + yval
-        if newy != y:
-            if newy >= 0 and newy < len(ground_map):
-                new = ground_map[newy][x]
-                if new <= value:
-                    return 0
-        
-    for xval in neighbours:
-        newx = x + xval
-        if newx != x:
-            if newx >= 0 and newx < len(ground_map[0]):
-                new = ground_map[y][newx]
-                if new <= value:
-                    return 0
-    return 1
 
+# day 10
+def validate_navigation(user_input, variables):
+    user_input = user_input.strip(" ")
+    if not user_input:
+        return out("Usage: validate_navigation <mode>: 'corrupt' or 'incomplete'", bcol.WARN)
+    if "true" != user_input and "false" != user_input:
+        return out("Error: <mode> must be 'corrupt' or 'incomplete'", bcol.FAIL)
+    full_input = variables["src"]
+    c = {
+        "{": 3,
+        "(": 1,
+        "[": 2,
+        "<": 4
+    }
+    d = {
+        "}": 3,
+        ")": 1,
+        "]": 2,
+        ">": 4
+    }
+    scores = {
+        3: 1197,
+        1: 3,
+        2: 57,
+        4: 25137
+    }
+    res = 0
+    incomplete = []
+    for line in full_input:
+        stack = []
+        for ch in line:
+            if c.get(ch) is not None:
+                stack.insert(0, c[ch])
+            elif d.get(ch) is not None:
+                if stack[0] == d[ch]:
+                    stack.pop(0)
+                else:
+                    res += scores[d[ch]]
+                    stack = []
+                    break
+            else:
+                return out("Illegal character found", bcol.FAIL)
+        if len(stack):
+            incomplete.append((line, stack))
+    if user_input == "corrupt":
+        return out(f"Sum of scores is {res}", bcol.OKGREEN)
+    total_scores = []
+    for line, stack in incomplete:
+        tot = 0
+        for value in stack:
+            tot *= 5
+            tot += value
+        total_scores.append(tot)
+    sort = sorted(total_scores)
+    middle = sort[int(len(sort) / 2)]
+    return out(f"Middle value of sorted list is {middle}", bcol.OKGREEN)
+
+# day 9
 def map_smoke_flows(user_input, variables):
     user_input = user_input.strip(" ")
     if not user_input:
         return out("Usage: map_smoke_flows <mode>: 'low' or 'basin'", bcol.WARN)
-    if "true" != user_input and "false" != user_input:
+    if "basin" != user_input and "low" != user_input:
         return out("Error: <mode> must be 'low' or 'basin'", bcol.FAIL)
     full_input = variables["src"]
     ground_map = []
@@ -45,11 +80,11 @@ def map_smoke_flows(user_input, variables):
             if check_neighbours(value, ground_map, x, y):
                 tot_risk += 1 + value
                 lower_points.append([value, x, y])
-    if user_input == "false":
+    if user_input == "low":
         return out(f"Total of risk levels is {tot_risk}", bcol.OKGREEN)
     basins = []
     for low in lower_points:
-       basins.append(flood_fill(low[1], low[2], ground_map))
+        basins.append(flood_fill(low[1], low[2], ground_map))
     res = 1
     for basin in sorted(basins, reverse=True)[:3]:
         res *= basin
@@ -61,8 +96,29 @@ def map_smoke_flows(user_input, variables):
                 else:
                     f.write(str(num))
     return out(f"Total number of basins is {len(basins)} sizes multiplied are {res}", bcol.OKGREEN)
-        
-def flood_fill(x, y, ground_map, c = 0):
+
+
+def check_neighbours(value, ground_map, x, y):
+    neighbours = [-1, 0, 1]
+    for yval in neighbours:
+        newy = y + yval
+        if newy != y:
+            if 0 <= newy < len(ground_map):
+                new = ground_map[newy][x]
+                if new <= value:
+                    return 0
+
+    for xval in neighbours:
+        newx = x + xval
+        if newx != x:
+            if 0 <= newx < len(ground_map[0]):
+                new = ground_map[y][newx]
+                if new <= value:
+                    return 0
+    return 1
+
+
+def flood_fill(x, y, ground_map, c=0):
     if ground_map[y][x] == -1 or ground_map[y][x] == 9:
         return 0
     ground_map[y][x] = -1
@@ -77,7 +133,8 @@ def flood_fill(x, y, ground_map, c = 0):
         c += flood_fill(x, y + 1, ground_map)
     return c
 
-#day 8
+
+# day 8
 def decode_clock(user_input, variables):
     user_input = user_input.strip(" ")
     if not user_input:
@@ -96,27 +153,27 @@ def decode_clock(user_input, variables):
                     res += 1
         return out(f"There's {res} unique patterns", bcol.OKGREEN)
     else:
-        lengths = {2 : [1], 3 : [7], 4 : [4], 5 : [2, 3, 5], 6 : [0, 6, 9], 7 : [8]}
+        lengths = {2: [1], 3: [7], 4: [4], 5: [2, 3, 5], 6: [0, 6, 9], 7: [8]}
         total = 0
         for line in only_out:
             known = {}
-            storage = {2 : [], 3 : [], 4 : [], 5 : [], 6 : [], 7 : []}
+            storage = {2: [], 3: [], 4: [], 5: [], 6: [], 7: []}
             for digit in line[0].strip(" ").split(" "):
                 storage[len(digit)].append(digit)
                 if len(digit) == 2 or len(digit) == 3 or len(digit) == 4 or len(digit) == 7:
                     known[lengths[len(digit)][0]] = digit
             for digit in line[0].strip(" ").split(" "):
-                #find 3
+                # find 3
                 for string in storage[5]:
                     if known[1][0] in string and known[1][1] in string:
                         known[3] = string
                         break
-                #find 6
+                # find 6
                 for string in storage[6]:
                     if known[1][0] not in string or known[1][1] not in string:
                         known[6] = string
                         break
-                #find 5 and 2
+                # find 5 and 2
                 top_right = "abcdefg"
                 for ch in known[6]:
                     top_right = top_right.replace(ch, "")
@@ -126,12 +183,12 @@ def decode_clock(user_input, variables):
                             known[2] = string
                         elif top_right not in string:
                             known[5] = string
-                #find 9
+                # find 9
                 for string in storage[6]:
                     if all(ch in string for ch in known[5]) and top_right in string:
                         known[9] = string
                         break
-                #find 0
+                # find 0
                 for string in storage[6]:
                     if known[9] != string and known[6] != string:
                         known[0] = string
@@ -146,7 +203,8 @@ def decode_clock(user_input, variables):
             total += res
         return out(f"Sum of outputs is {total}", bcol.OKGREEN)
 
-#day 7 (god that's sloooooow)
+
+# day 7 (god that's sloooooow)
 def align_crabs(user_input, variables):
     user_input = user_input.strip(" ")
     if not user_input:
@@ -168,7 +226,8 @@ def align_crabs(user_input, variables):
                     sums[x] += i
     return out(f"Minimum fuel required for crabs to align is {str(min(sums))}", bcol.OKGREEN)
 
-#day 6
+
+# day 6
 def evolve_fishes(user_input, variables):
     if not user_input.strip(" "):
         return out("Usage; evolve_fishes <days>:int", bcol.WARN)
@@ -177,14 +236,15 @@ def evolve_fishes(user_input, variables):
     except:
         return out("Error: <days> must be an integer", bcol.FAIL)
     fishnet = variables["src"].copy()
-    d = {x : 0 for x in range(9)}
+    d = {x: 0 for x in range(9)}
     for fish in fishnet:
         d[fish] += 1
     for day in range(args):
         d = {0: d[1], 1: d[2], 2: d[3], 3: d[4], 4: d[5], 5: d[6], 6: d[7] + d[0], 7: d[8], 8: d[0]}
     return out(str(sum(d[x] for x in range(9))), bcol.OKGREEN)
 
-#day 5
+
+# day 5
 def map_coordinates(user_input, variables):
     args = "src"
     diag = user_input.strip(" ")
@@ -218,7 +278,7 @@ def map_coordinates(user_input, variables):
                         start[0] -= 1
             elif diag:
                 if "true" != diag:
-                    return out("Usage: map_coordinates <use diagonals=false or tue>", bcol.WARN)
+                    return out("Usage: map_coordinates <use diagonals=false or true>", bcol.WARN)
                 if start[0] <= end[0] and start[1] <= end[1]:
                     while start[1] <= end[1] or start[0] <= end[0]:
                         maps[start[1]][start[0]] += 1
@@ -256,11 +316,10 @@ def map_coordinates(user_input, variables):
                 f.write("\n")
         return out(f"There's {res} overlapping points", bcol.OKGREEN)
     except Exception as e:
-        raise e
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
-        
 
-#day 4
+
+# day 4
 def parse_bingo(user_input, variables):
     args = "src"
     try:
@@ -285,6 +344,7 @@ def parse_bingo(user_input, variables):
     except Exception as e:
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
 
+
 def check_bingo(table):
     if table:
         temp_col = [0] * 5
@@ -301,7 +361,8 @@ def check_bingo(table):
                 return table
     return False
 
-#day 4 2   
+
+# day 4 2
 def solve_last_bingo(user_input, variables):
     args = "src"
     try:
@@ -330,7 +391,8 @@ def solve_last_bingo(user_input, variables):
     except Exception as e:
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
 
-#day 4 1
+
+# day 4 1
 def solve_bingo(user_input, variables):
     args = "src"
     try:
@@ -353,8 +415,9 @@ def solve_bingo(user_input, variables):
     except Exception as e:
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
 
-#day 3 2
-def filter_commons(user_input, variables):    
+
+# day 3 2
+def filter_commons(user_input, variables):
     try:
         args = user_input.split()
         if len(args) < 1:
@@ -401,12 +464,16 @@ def filter_commons(user_input, variables):
                                 new_list.append(item)
                     copy2 = new_list.copy()
                 index += 1
-            return out(f"Result: {int(copy1[0], 2)}, not result: {int(copy2[0], 2)}, multiplied: {int(copy2[0], 2) * int(copy1[0], 2)}", bcol.OKGREEN)
+            return out(
+                f"Result: {int(copy1[0], 2)}, not result: {int(copy2[0], 2)}, multiplied: {int(copy2[0], 2) * int(copy1[0], 2)}",
+                bcol.OKGREEN)
         else:
             return out(f"Error: can't find {args}:<src list> in globals", bcol.FAIL)
     except Exception as e:
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
-#day 3 1        
+
+
+# day 3 1
 def count_commons(user_input, variables):
     try:
         args = user_input.split()
@@ -431,13 +498,15 @@ def count_commons(user_input, variables):
                     final += '0'
             val1 = int(final, 2)
             val2 = int(gate(final, 'not'), 2)
-            return out(f"Multiplied result is: {val1 * val2}, decimal is: {val1}, not gate decimal is {val2}", bcol.OKGREEN)
+            return out(f"Multiplied result is: {val1 * val2}, decimal is: {val1}, not gate decimal is {val2}",
+                       bcol.OKGREEN)
         else:
             return out(f"Error: can't find {args}:<src list> in globals", bcol.FAIL)
     except Exception as e:
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
 
-#day2
+
+# day2
 def find_arrive(user_input, variables):
     try:
         args = user_input.split()
@@ -474,7 +543,8 @@ def find_arrive(user_input, variables):
     except Exception as e:
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
 
-# day1     
+
+# day1
 def find_increase(user_input, variables):
     try:
         args = user_input.split()
@@ -504,15 +574,16 @@ def find_increase(user_input, variables):
     except Exception as e:
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
 
-#2020 day 1
+
+# 2020 day 1
 def findsum(user_input, variables):
     try:
         args = user_input.split()
-        if len(args) <= 1:
-                return out("Usage: findsum <target_value>:int <src list>", bcol.WARN)
-        if variables.get(args[1]):
+        if len(args) < 1:
+            return out("Usage: findsum <target_value>:int", bcol.WARN)
+        if variables.get("src"):
             value = int(args[0])
-            for el in variables[args[1]]:
+            for el in variables["src"]:
                 if sum(el) == value:
                     return out(f"{el} sums to {value}", bcol.OKGREEN)
         else:
@@ -520,7 +591,8 @@ def findsum(user_input, variables):
     except Exception as e:
         return out(f"{e.__class__.__name__}: {e}", bcol.FAIL)
 
-#utilities
+
+# utilities
 class bcol:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -532,8 +604,10 @@ class bcol:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
 def out(msg, col):
     return f"{col}{msg}{bcol.ENDC}"
+
 
 def gate(input, gatename):
     if "not" in gatename:
@@ -545,4 +619,4 @@ def gate(input, gatename):
                 output += '1'
         return output
     else:
-        print("Gate not supported")  
+        print("Gate not supported")
