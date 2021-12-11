@@ -2,12 +2,83 @@ import itertools
 import copy
 
 
+# day 11
+def light_octopuses(user_input, variables):
+    user_input = user_input.strip(" ").split()
+    if not len(user_input):
+        return out("Usage: light_octopuses <mode>: 'all' or 'steps'", bcol.WARN)
+    if "steps" != user_input[0] and "all" != user_input[0]:
+        return out("Error: <mode> must be 'all' or 'steps'", bcol.FAIL)
+    if "steps" == user_input[0]:
+        if len(user_input) > 1:
+            try:
+                loops = int(user_input[1])
+            except:
+                return out("Error: <steps number> must be an int", bcol.FAIL)
+        else:
+            return out("Usage: light_octopuses steps <steps number>:int", bcol.WARN)
+    else:
+        loops = 10000
+    full_input = variables["src"]
+    octo_map = []
+    try:
+        for line in full_input:
+            new_list = []
+            for ch in line:
+                new_list.append(int(ch))
+            octo_map.append(new_list)
+    except:
+        return out("Failed to parse 'src' variable", bcol.FAIL)
+    res = 0
+    for i in range(loops):
+        for y, line in enumerate(octo_map):
+            for x, num in enumerate(line):
+                if octo_map[y][x] is not -1:
+                    octo_map[y][x] += 1
+                if octo_map[y][x] > 9:
+                    octo_map[y][x] = -1
+                    res += 1
+                    res += light_neighbors(x, y, octo_map)
+        all = True
+        for y, line in enumerate(octo_map):
+            for x, num in enumerate(line):
+                if octo_map[y][x] == -1:
+                    octo_map[y][x] = 0
+                else:
+                    all = False
+        if user_input[0] == 'all' and all:
+            return out(f"All octopuses blink synchronized at {str(i + 1)} steps", bcol.OKGREEN)
+    with open("map.txt", 'w') as f:
+        for line in octo_map:
+            for num in line:
+                f.write(str(num))
+            f.write('\n')
+    return out(f"{str(res)} octopuses blinked during {loops} steps", bcol.OKGREEN)
+
+
+def light_neighbors(x, y, octo_map, c=0):
+    neighbours = [-1, 0, 1]
+    for a in neighbours:
+        for b in neighbours:
+            if a != 0 or b != 0:
+                newx = x + b
+                newy = y + a
+                if 0 <= newx < len(octo_map[0]) and 0 <= newy < len(octo_map):
+                    if octo_map[newy][newx] is not -1:
+                        octo_map[newy][newx] += 1
+                        if octo_map[newy][newx] > 9:
+                            c += 1
+                            octo_map[newy][newx] = -1
+                            c += light_neighbors(newx, newy, octo_map)
+    return c
+
+
 # day 10
 def validate_navigation(user_input, variables):
     user_input = user_input.strip(" ")
     if not user_input:
         return out("Usage: validate_navigation <mode>: 'corrupt' or 'incomplete'", bcol.WARN)
-    if "true" != user_input and "false" != user_input:
+    if "corrupt" != user_input and "incomplete" != user_input:
         return out("Error: <mode> must be 'corrupt' or 'incomplete'", bcol.FAIL)
     full_input = variables["src"]
     c = {
@@ -58,6 +129,7 @@ def validate_navigation(user_input, variables):
     sort = sorted(total_scores)
     middle = sort[int(len(sort) / 2)]
     return out(f"Middle value of sorted list is {middle}", bcol.OKGREEN)
+
 
 # day 9
 def map_smoke_flows(user_input, variables):

@@ -243,6 +243,7 @@ def main():
         "validate_navigation": validate_navigation,
         "2020 day 1": findsum,
         "day 10": validate_navigation,
+        "day 11": light_octopuses,
         "day 1": find_increase,
         "day 2": find_arrive,
         "day 3 1": count_commons,
