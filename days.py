@@ -31,8 +31,8 @@ def light_octopuses(user_input, variables):
         return out("Failed to parse 'src' variable", bcol.FAIL)
     res = 0
     for i in range(loops):
-        for y, line in enumerate(octo_map):
-            for x, num in enumerate(line):
+        for y in range(len(octo_map)):
+            for x in range(len(octo_map[0])):
                 if octo_map[y][x] is not -1:
                     octo_map[y][x] += 1
                 if octo_map[y][x] > 9:
@@ -40,8 +40,8 @@ def light_octopuses(user_input, variables):
                     res += 1
                     res += light_neighbors(x, y, octo_map)
         all = True
-        for y, line in enumerate(octo_map):
-            for x, num in enumerate(line):
+        for y in range(len(octo_map)):
+            for x in range(len(octo_map[0])):
                 if octo_map[y][x] == -1:
                     octo_map[y][x] = 0
                 else:
