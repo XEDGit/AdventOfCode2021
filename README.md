@@ -9,24 +9,31 @@ It features **live output**, **autocomplete** and **command history managing**
 
 So I guess you're now thinking what kind of functions are in there, and as you
 can imagine there's functions for **downloading**, **parsing** and **solving** the daily
-challenges obviously!
+challenges!
 
 Here's a list:
 
    ### Functions:
+    -help : gives list of available functions
+    -clear : clear console history
     -group : used to regroup src in various ways
-    -parseday : used to parse a input file to a local variable
+    -parseday : used to parse a input file which is created by getday to a local variable
     -findsum : 2020 day 1 solve
     -find_increase : day 1 solve 
     -find_arrive : day 2 solve
     -count_commons : day 3 part 1 solve
     -filter_commons : day 3 part 2 solve
-    -parse_bingo : parse "src" as bingo boards, use before solve_bingo or next
-    -solve_bingo : day 4 part 1 solve
+    -parse_bingo : parse "src" as bingo boards, use before solve_bingo
+    -solve_bingo : day 4 part 1 solve, use after parse_bingo
     -solve_last_bingo : day 4 part 2 solve
     -map_coordinates : day 5 solve
-    -help : gives list of available functions
-    -clear : clear console history
+    -evolve_fishes : day 6 solve
+    -align_crabs : day 7 solve
+    -decode_clock : day 8 solve
+    -map_smoke_flows : day 9 solve
+    -validate_navigation : day 10 solve
+    -light_octopuses : day 11 solve
+    
 
    ### Day shortcuts:
     -2020 day 1 
@@ -37,6 +44,12 @@ Here's a list:
     -day 4 1
     -day 4 2
     -day 5
+    -day 6
+    -day 7
+    -day 8
+    -day 9
+    -day 10
+    -day 11
 
    ### Bash command:
     -getday <day>: downloads a day's input from adventofcode.com
@@ -44,7 +57,7 @@ Here's a list:
     -rm <path>: removes a file
     -cat <path>: shows content of a text file located into /inputs folder
     
-    remember the file path on Windows is with \ in UNIX with /
+    remember the file path on Windows uses '\', in UNIX with '/'
 
 If instead **you need help with the command usage, try typing the command itself**, the
 CLI will provide you with arguments explaination
