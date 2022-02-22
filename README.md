@@ -1,4 +1,4 @@
-# Welcome to aoc_CLI for Advent of Code 2021!
+# Welcome to Command Lines Interface for Advent of Code 2021!
 This small project points towards making command line interface
 with python, where you can use **python**, **bash** and **user-made functions**, with the
 scope of helping during the AoC
