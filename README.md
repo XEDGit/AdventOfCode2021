@@ -9,6 +9,8 @@ It features **live output**, **autocomplete** and **command history managing**
 
 ### Dependencies:
    - python3
+   - getch (for MacOs and Linux)
+   - msvcrt (for Windows)
 
 ### Platform:
 
@@ -23,7 +25,7 @@ It features **live output**, **autocomplete** and **command history managing**
 
       git clone git@github.com:XEDGit/aoc_CLI.git
       cd aoc_CLI/
-      python3 aoc_CLI.py
+      python3 aoc_cli.py
       getday 6
       
 Now fill the cookie.txt new created file with your session id from advent of code website and run
