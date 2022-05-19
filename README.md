@@ -1,11 +1,24 @@
-# Welcome to Command Lines Interface for Advent of Code 2021!
+# Welcome to CLI for Advent of Code 2021!
 This small project points towards making command line interface
 with python, where you can use **python**, **bash** and **user-made functions**, with the
 scope of helping during the AoC
 
 It features **live output**, **autocomplete** and **command history managing**
 
-## How to run
+## Info:
+
+### Dependencies:
+   - python3
+
+### Platform:
+
+  - 🍏 <img src="https://img.shields.io/badge/MacOs-working-brightgreen" />
+
+  - 🐧 <img src="https://img.shields.io/badge/Linux-working-brightgreen" />
+
+  - 🪟 <img src="https://img.shields.io/badge/Windows-working-brightgreen" />
+
+## Setup:
 ### Terminal and Powershell
 
       git clone git@github.com:XEDGit/aoc_CLI.git
