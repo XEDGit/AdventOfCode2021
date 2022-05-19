@@ -92,15 +92,20 @@ Here's a list:
 If instead **you need help with the command usage, try typing the command itself**, the
 CLI will provide you with arguments explaination
 ## Features
-### Command history
+
+### Live output:
+The CLI will execute the command you're typing in a sandbox enviroment everytime you press a charachter on your keyboard,
+when you press `Enter` the modifications you see wil be executed
+
+### Command history:
 To **navigate your command history** use the keys '\`' for moving back and '~' for forward,
 at startup history will be populated with enviromental variables
 
-### Autocomplete
+### Autocomplete:
 To **use autocomplete** simply type part of the desired command, and then click 'TAB',
 click repeatedly to navigate
 
-### Enviromental variables
+### Enviromental variables:
 As most of the CLIs it uses **enviromental variables**, to set them simply write
 <ENV_VAR> = <new value> into the CLI
 #### Enviromental variables(Default value):
