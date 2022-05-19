@@ -33,7 +33,7 @@ def light_octopuses(user_input, variables):
     for i in range(loops):
         for y in range(len(octo_map)):
             for x in range(len(octo_map[0])):
-                if octo_map[y][x] is not -1:
+                if octo_map[y][x] != -1:
                     octo_map[y][x] += 1
                 if octo_map[y][x] > 9:
                     octo_map[y][x] = -1
@@ -64,7 +64,7 @@ def light_neighbors(x, y, octo_map, c=0):
                 newx = x + b
                 newy = y + a
                 if 0 <= newx < len(octo_map[0]) and 0 <= newy < len(octo_map):
-                    if octo_map[newy][newx] is not -1:
+                    if octo_map[newy][newx] != -1:
                         octo_map[newy][newx] += 1
                         if octo_map[newy][newx] > 9:
                             c += 1
