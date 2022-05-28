@@ -3,7 +3,7 @@ This small project points towards making command line interface
 with python, where you can use **python**, **bash** and **user-made functions**, with the
 scope of helping during the AoC
 
-It features **live output**, **autocomplete** and **command history managing**
+It features **live output**, **autocomplete** and **command history management**
 
 ## Info:
 
