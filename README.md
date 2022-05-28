@@ -14,11 +14,11 @@ It features **live output**, **autocomplete** and **command history management**
 
 ### Platform:
 
-  - 🍏 <img src="https://img.shields.io/badge/MacOs-working-brightgreen" />
+[<img src="https://img.shields.io/badge/Working-52CF44?style=for-the-badge&label=MacOS&logo=apple&logoColor=white" />](https://github.com/XEDGit/memdetect)
 
-  - 🐧 <img src="https://img.shields.io/badge/Linux-working-brightgreen" />
+[<img src="https://img.shields.io/badge/Working-52CF44?style=for-the-badge&label=Linux&logo=linux&logoColor=white" />](https://github.com/XEDGit/memdetect)
 
-  - 🪟 <img src="https://img.shields.io/badge/Windows-working-brightgreen" />
+[<img src="https://img.shields.io/badge/Compatible via WSL-52CF44?style=for-the-badge&label=Windows&logo=windows&logoColor=white" />](https://docs.microsoft.com/en-us/windows/wsl/install)
 
 ## Setup:
 ### Terminal and Powershell
