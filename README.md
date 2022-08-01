@@ -110,5 +110,6 @@ click repeatedly to navigate
 ### Enviromental variables:
 As most of the CLIs it uses **enviromental variables**, to set them simply write
 <ENV_VAR> = <new value> into the CLI
+
 #### Enviromental variables(Default value):
    - OUT_LEN(150): length of output before being truncated

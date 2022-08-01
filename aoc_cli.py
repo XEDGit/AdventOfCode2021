@@ -239,8 +239,11 @@ def main():
         "solve_last_bingo": solve_last_bingo,
         "map_coordinates": map_coordinates,
         "evolve_fishes": evolve_fishes,
+		"align_crabs": align_crabs,
+		"decode_clock": decode_clock,
         "map_smoke_flows": map_smoke_flows,
         "validate_navigation": validate_navigation,
+		"light_octopuses": light_octopuses,
         "2020 day 1": findsum,
         "day 10": validate_navigation,
         "day 11": light_octopuses,
@@ -262,7 +265,7 @@ def main():
     history = [
         f"{bcol.BOLD}{bcol.OKGREEN}Welcome to aoc_CLI from XEDGit",
         f"{bcol.OKBLUE}Enviromental variables(current value):",
-        f"\t{bcol.OKBLUE}OUT_LEN(150) = length of output before being truncated",
+        f"\t{bcol.OKBLUE}OUT_LEN({variables['OUT_LEN']}) = length of output before being truncated",
         f"{bcol.WARN}Use '{bytes.decode(up_key)}' or '{bytes.decode(down_key)}' to access command history!",
         bcol.ENDC
     ]

@@ -302,7 +302,7 @@ def align_crabs(user_input, variables):
 # day 6
 def evolve_fishes(user_input, variables):
     if not user_input.strip(" "):
-        return out("Usage; evolve_fishes <days>:int", bcol.WARN)
+        return out("Usage: evolve_fishes <days>:int", bcol.WARN)
     try:
         args = int(user_input.strip(" "))
     except:
@@ -318,11 +318,10 @@ def evolve_fishes(user_input, variables):
 
 # day 5
 def map_coordinates(user_input, variables):
-    args = "src"
     diag = user_input.strip(" ")
     try:
         maps = [[0 for x in range(1000)] for y in range(1000)]
-        for line in variables[args]:
+        for line in variables['src']:
             bothcoords = line.split("-")
             start = bothcoords[0].split(",")
             end = bothcoords[1].split(",")
