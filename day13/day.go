@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -14,7 +15,6 @@ func encodeCoords(xy []int) string {
 
 func removeDups(slice [][]int) [][]int {
 	keys := make(map[string]bool)
-	// list := make([][]int, len(slice))
 	list := [][]int{}
 	new_i := 0
 
@@ -23,7 +23,6 @@ func removeDups(slice [][]int) [][]int {
 		_, present := keys[entry]
 		if !present {
 			keys[entry] = true
-			// list[new_i] = []int{el[0], el[1]}
 			list = append(list, el)
 			new_i++
 			continue
@@ -56,12 +55,20 @@ func findMax(list [][]int) []int {
 	return max
 }
 
-func fold(line string, list [][]int) {
-	axis := 1
+func getFold(line string) (int, int) {
+	if line == "" {
+		return 2, 0
+	}
+	axis := 0
 	if line[11] == 'x' {
-		axis = 0
+		axis = 1
 	}
 	fold, _ := strconv.Atoi(line[13:])
+	return axis, fold
+}
+
+func fold(line string, list [][]int) {
+	axis, fold := getFold(line)
 	for _, el := range list {
 
 		if el[axis] > fold {
@@ -70,44 +77,76 @@ func fold(line string, list [][]int) {
 	}
 }
 
-func main() {
-	data, err := os.ReadFile("./input")
-	if err != nil {
-		panic(err)
+var target_i = 0
+
+func messageHandler(w http.ResponseWriter, r *http.Request) {
+	init := false
+	coords := false
+	lines := []string{}
+	list := [][]int{}
+	if !init {
+
+		data, err := os.ReadFile("./input")
+		if err != nil {
+			panic(err)
+		}
+		lines = strings.Split(string(data), "\n")
+		list = make([][]int, countLines(lines))
+		for i := range list {
+			list[i] = make([]int, 2)
+		}
+		coords = true
 	}
-	lines := strings.Split(string(data), "\n")
-	list := make([][]int, countLines(lines))
-	for i := range list {
-		list[i] = make([]int, 2)
-	}
-	coords := true
+	last_line := ""
 	for i, line := range lines {
 		if len(line) <= 1 {
 			coords = false
+			if target_i == 0 {
+				target_i = i + 1
+			}
 			continue
 		}
 		if coords {
 
 			xy := strings.Split(line, ",")
-			list[i][0], _ = strconv.Atoi(xy[0])
-			list[i][1], _ = strconv.Atoi(xy[1])
+			list[i][1], _ = strconv.Atoi(xy[0])
+			list[i][0], _ = strconv.Atoi(xy[1])
 			continue
 		}
 		fold(line, list)
 		list = removeDups(list)
-		fmt.Println("fold ", len(list))
+		if i == target_i {
+			target_i++
+			last_line = lines[i+1]
+			break
+		}
 	}
+	if target_i == len(lines)-1 {
+		target_i = 0
+	}
+	fmt.Fprint(w, "<h1>Paper folder</h1>\n\n<h4>"+last_line+"</h4>\n<tt style=\"white-space: pre-wrap;\">"+string(show(list, last_line))+"</tt>")
+}
+
+func show(list [][]int, line string) []byte {
 	max := findMax(list)
-	paper := make([][]bool, max[0])
+	paper := make([][]bool, max[0]+1)
 	for i := range paper {
-		paper[i] = make([]bool, max[1])
+		paper[i] = make([]bool, max[1]+1)
 	}
 	for _, el := range list {
 		paper[el[0]][el[1]] = true
 	}
+	axis, fold := getFold(line)
 	res := []byte{}
-	for _, col := range paper {
-		for _, cell := range col {
+	for y, col := range paper {
+		for x, cell := range col {
+			if axis == 0 && y == fold-1 {
+				res = append(res, '-')
+				continue
+			} else if axis == 1 && x == fold-1 {
+				res = append(res, '|')
+				continue
+			}
 			if cell {
 				res = append(res, '#')
 				continue
@@ -116,5 +155,13 @@ func main() {
 		}
 		res = append(res, '\n')
 	}
-	os.Stdout.Write(res)
+	return res
+}
+
+func main() {
+	mux := http.NewServeMux()
+	// Convert the messageHandler function to a HandlerFunc type
+	mh := http.HandlerFunc(messageHandler)
+	mux.Handle("/", mh)
+	http.ListenAndServe(":8080", mux)
 }
